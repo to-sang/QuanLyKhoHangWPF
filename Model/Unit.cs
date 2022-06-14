@@ -20,16 +20,16 @@ namespace Nhom13_Quan_ly_kho_hang.Model
         {
             this.Objects = new HashSet<Object>();
         }
-    
+
         public int Id { get; set; }
         private string _DisplayName;
 
         public string DisplayName
         {
             get { return _DisplayName; }
-            set { _DisplayName = value; }
+            set { _DisplayName = value; OnPropertyChanged(); }
         }
-    
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Object> Objects { get; set; }
     }

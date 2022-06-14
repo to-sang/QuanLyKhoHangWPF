@@ -122,7 +122,7 @@ namespace Nhom13_Quan_ly_kho_hang.ViewModel
         {
             TonKhoList = new ObservableCollection<TonKho>();
 
-            var objectList = DataProvider.Ins.DB.Objects;
+            var objectList = DataProvider.Ins.DB.Objects.OrderBy(item => item.DisplayName);
             int i = 1;
             TongNhap = TongXuat = 0;
             foreach(var item in objectList)

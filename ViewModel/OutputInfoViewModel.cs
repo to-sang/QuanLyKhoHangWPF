@@ -201,9 +201,9 @@ namespace Nhom13_Quan_ly_kho_hang.ViewModel
 
         void LoadData()
         {
-            List = new ObservableCollection<OutputInfo>(DataProvider.Ins.DB.OutputInfoes);
-            ObjectList = new ObservableCollection<Model.Object>(DataProvider.Ins.DB.Objects);
-            Customer = new ObservableCollection<Customer>(DataProvider.Ins.DB.Customers);
+            List = new ObservableCollection<OutputInfo>(DataProvider.Ins.DB.OutputInfoes.OrderBy(item => item.Output.DateOutput));
+            ObjectList = new ObservableCollection<Model.Object>(DataProvider.Ins.DB.Objects.OrderBy(item => item.DisplayName));
+            Customer = new ObservableCollection<Customer>(DataProvider.Ins.DB.Customers.OrderBy(item => item.DisplayName));
             SelectedCustomer = Customer[0];
             SelectedObject = ObjectList[0];
         }

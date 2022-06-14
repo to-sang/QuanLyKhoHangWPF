@@ -9,30 +9,43 @@
 
 namespace Nhom13_Quan_ly_kho_hang.Model
 {
+    using Nhom13_Quan_ly_kho_hang.ViewModel;
     using System;
     using System.Collections.Generic;
     
-    public partial class Object
+    public partial class Object : BaseViewModel
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Object()
         {
-            this.InputInfoes = new HashSet<InputInfo>();
             this.OutputInfoes = new HashSet<OutputInfo>();
+            this.InputInfoes = new HashSet<InputInfo>();
         }
-    
-        public string Id { get; set; }
-        public string DisplayName { get; set; }
+
+        private string _Id;
+
+        public string Id
+        {
+            get { return _Id; }
+            set { _Id = value; OnPropertyChanged(); }
+        }
+        private string _DisplayName;
+
+        public string DisplayName
+        {
+            get { return _DisplayName; }
+            set { _DisplayName = value; OnPropertyChanged(); }
+        }
         public int IdUnit { get; set; }
         public int IdSuplier { get; set; }
         public string ORCode { get; set; }
         public string BarCode { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InputInfo> InputInfoes { get; set; }
         public virtual Suplier Suplier { get; set; }
         public virtual Unit Unit { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OutputInfo> OutputInfoes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<InputInfo> InputInfoes { get; set; }
     }
 }

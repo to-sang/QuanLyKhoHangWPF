@@ -68,13 +68,6 @@ namespace Nhom13_Quan_ly_kho_hang.ViewModel
             get { return _SelectedObject; }
             set { _SelectedObject = value; OnPropertyChanged(); }
         }
-        private double _PriceOutput;
-
-        public double PriceOutput
-        {
-            get { return _PriceOutput; }
-            set { _PriceOutput = value; OnPropertyChanged(); }
-        }
 
         private string _Status;
 
@@ -99,17 +92,15 @@ namespace Nhom13_Quan_ly_kho_hang.ViewModel
                     DateInput = SelectedItem.Input.DateInput.Value;
                     Count = SelectedItem.Count.Value;
                     PriceInput = SelectedItem.InputPrice.Value;
-                    PriceOutput = SelectedItem.OutputPrice.Value;
                     Status = SelectedItem.Status;
                     SelectedObject = SelectedItem.Object;
                 }
                 else
                 {
                     Id = null;
-                    DateInput = DateTime.Today;
+                    DateInput = DateTime.Now;
                     Count = 0;
                     PriceInput = 0;
-                    PriceOutput = 0;
                     Status = "";
                 }
             }
@@ -128,22 +119,16 @@ namespace Nhom13_Quan_ly_kho_hang.ViewModel
                 return true;
             }, (p) =>
             {
-                var inp = DataProvider.Ins.DB.Inputs.Where(x => x.DateInput == DateInput);
-                Console.WriteLine(inp.Count());
-                if (!(inp == null || inp.Count() != 0))
-                {
-                    var input = new Model.Input() { DateInput = DateInput, Id = Guid.NewGuid().ToString() };
-                    DataProvider.Ins.DB.Inputs.Add(input);
-                    DataProvider.Ins.DB.SaveChanges();
-                }
-                var inpo = DataProvider.Ins.DB.Inputs.Where(x => x.DateInput == DateInput).SingleOrDefault();
+                var input = new Model.Input() { DateInput = DateInput, Id = Guid.NewGuid().ToString() };
+                DataProvider.Ins.DB.Inputs.Add(input);
+                DataProvider.Ins.DB.SaveChanges();
+                var inpo = DataProvider.Ins.DB.Inputs.Where(x => x.Id == input.Id).SingleOrDefault();
                 var inputinfor = new InputInfo()
                 {
                     IdObject = SelectedObject.Id,
                     IdInput = inpo.Id,
                     Count = Count,
                     InputPrice = PriceInput,
-                    OutputPrice = PriceOutput,
                     Status = Status,
                     Id = Guid.NewGuid().ToString()
                 };
@@ -153,28 +138,32 @@ namespace Nhom13_Quan_ly_kho_hang.ViewModel
             });
 
             EditCommand = new RelayCommand<object>((p) => 
-            { 
-                return true; 
+            {
+                if (DateInput.Day == DateTime.Today.Day || DateInput.Month == DateTime.Today.Month || DateInput.Year == DateTime.Today.Year)
+                    return true;
+                else
+                    return false;
             }, (p) =>
             {
-                var inp = DataProvider.Ins.DB.Inputs.Where(x => x.DateInput == DateInput);
-                Console.WriteLine(inp.Count());
-                if (!(inp == null || inp.Count() != 0))
-                {
-                    var input = new Model.Input() { DateInput = DateInput, Id = Guid.NewGuid().ToString() };
-                    DataProvider.Ins.DB.Inputs.Add(input);
-                    DataProvider.Ins.DB.SaveChanges();
-                }
-                var inpo = DataProvider.Ins.DB.Inputs.Where(x => x.DateInput == DateInput).SingleOrDefault();
+                int sumInput, sumOutput;
                 var inputInfo = DataProvider.Ins.DB.InputInfoes.Where(x => x.Id == Id).SingleOrDefault();
-                inputInfo.IdObject = SelectedObject.Id;
-                inputInfo.IdInput = inpo.Id;
-                inputInfo.Count = Count;
-                inputInfo.InputPrice = PriceInput;
-                inputInfo.OutputPrice = PriceOutput;
-                inputInfo.Status = Status;
-                DataProvider.Ins.DB.SaveChanges();
-                SelectedItem = inputInfo;
+                sumInput = (int)DataProvider.Ins.DB.InputInfoes.Where(x => x.IdObject == inputInfo.IdObject).Sum(su => su.Count) - (int)inputInfo.Count;
+                var listOutput = DataProvider.Ins.DB.OutputInfoes.Where(x => x.IdObject == inputInfo.IdObject);
+                sumOutput = (listOutput == null || listOutput.Count() == 0) ? 0 : (int)listOutput.Sum(su => su.Count);
+                if (inputInfo.IdObject == SelectedObject.Id)
+                    sumInput += Count;
+                if (sumInput < sumOutput)
+                    System.Windows.MessageBox.Show("Không thể sửa hàng nhập vì tồn kho không thể nhỏ hơn 0.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
+                else
+                {
+                    inputInfo.IdObject = SelectedObject.Id;
+                    inputInfo.Count = Count;
+                    inputInfo.InputPrice = PriceInput;
+                    inputInfo.Status = Status;
+                    DataProvider.Ins.DB.SaveChanges();
+                    SelectedItem = inputInfo;
+                }    
+                
             });
 
             DeleteCommand = new RelayCommand<object>((p) =>
@@ -200,8 +189,8 @@ namespace Nhom13_Quan_ly_kho_hang.ViewModel
 
         void LoadData()
         {
-            List = new ObservableCollection<InputInfo>(DataProvider.Ins.DB.InputInfoes);
-            ObjectList = new ObservableCollection<Model.Object>(DataProvider.Ins.DB.Objects);
+            List = new ObservableCollection<InputInfo>(DataProvider.Ins.DB.InputInfoes.OrderBy(item => item.Input.DateInput));
+            ObjectList = new ObservableCollection<Model.Object>(DataProvider.Ins.DB.Objects.OrderBy(item => item.DisplayName));
             SelectedObject = ObjectList[0];
         }
     }

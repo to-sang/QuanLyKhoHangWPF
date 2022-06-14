@@ -43,17 +43,10 @@ namespace Nhom13_Quan_ly_kho_hang
                 txtInputPrice = new TextBox();
                 txtInputPrice.Text = "0";
             }
-            if (txtOutputPrice is null)
-            {
-                txtOutputPrice = new TextBox();
-                txtOutputPrice.Text = "0";
-            }
             if (string.IsNullOrEmpty(txtCount.Text))
                 txtCount.Text = "0";
             if (string.IsNullOrEmpty(txtInputPrice.Text))
                 txtInputPrice.Text = "0";
-            if (string.IsNullOrEmpty(txtOutputPrice.Text))
-                txtOutputPrice.Text = "0";
         }
     }
 }
